@@ -154,7 +154,7 @@ fn parse_iwlist(network_list: &str) -> Result<Vec<Wifi>, Error> {
         let mut wifi_ssid = String::new();
         let mut wifi_channel = String::new();
         let mut wifi_rssi = String::new();
-        let wifi_security = String::new(); // FIXME needs implementing
+        let mut wifi_security = String::new();
 
         let mac_matches = mac_regex.captures(try!(lines.next().ok_or(Error::NoValue)));
 
@@ -168,6 +168,9 @@ fn parse_iwlist(network_list: &str) -> Result<Vec<Wifi>, Error> {
             if line.find("ESSID:").is_some() {
                 let ssid = line.split(":").nth(1).unwrap_or("").replace("\"", "");
                 wifi_ssid = ssid.to_string();
+            } else if line.find("Encryption key:").is_some() {
+                let security = line.split(":").nth(1).unwrap_or("").replace("\"", "");
+                wifi_security = security.to_string();
             } else if line.find("Frequency:").is_some() {
                 wifi_channel = line.split("Channel")
                                    .nth(1)
